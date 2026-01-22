@@ -16,6 +16,7 @@ import 'package:media_kit/src/models/playlist_mode.dart';
 import 'package:media_kit/src/models/player_stream.dart';
 
 import 'package:media_kit/src/player/native/player/player.dart';
+import 'package:media_kit/src/player/web/player/player.dart';
 import 'package:media_kit/src/player/platform_player.dart';
 
 /// {@template player}
@@ -112,6 +113,8 @@ class Player {
       platform = NativePlayer(configuration: configuration);
     } else if (UniversalPlatform.isAndroid) {
       platform = NativePlayer(configuration: configuration);
+    } else if (UniversalPlatform.isWeb) {
+      platform = WebPlayer(configuration: configuration);
     }
   }
 

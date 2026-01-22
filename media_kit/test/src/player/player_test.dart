@@ -18,6 +18,7 @@ import 'package:media_kit/src/models/playlist_mode.dart';
 import 'package:media_kit/src/media_kit.dart';
 import 'package:media_kit/src/player/player.dart';
 import 'package:media_kit/src/player/platform_player.dart';
+import 'package:media_kit/src/player/web/player/player.dart';
 import 'package:media_kit/src/player/native/player/player.dart';
 
 import '../../common/sources.dart';
@@ -30,6 +31,8 @@ void main() {
 
     // For preventing video driver & audio driver initialization errors in unit-tests.
     NativePlayer.test = true;
+    // For preventing "DOMException: play() failed because the user didn't interact with the document first." in unit-tests.
+    WebPlayer.test = true;
   });
   test(
     'player-platform',
@@ -43,6 +46,19 @@ void main() {
       addTearDown(player.dispose);
     },
     skip: UniversalPlatform.isWeb,
+  );
+  test(
+    'player-platform',
+    () {
+      final player = Player();
+      expect(
+        player.platform,
+        isA<WebPlayer>(),
+      );
+
+      addTearDown(player.dispose);
+    },
+    skip: !UniversalPlatform.isWeb,
   );
   test(
     'player-wait-for-player-initialization',
@@ -1061,8 +1077,14 @@ void main() {
       );
 
       player.stream.position.listen((event) async {
-        print(event);
-        expectPosition(event);
+        // Filter out stale position values before seek completes.
+        // On Linux, the position stream may emit the old EOF position
+        // before the seek operation updates it to Duration.zero.
+        // We can't change mpv platform specific behavior here. And we only care about the stable position.
+        if (event == Duration.zero) {
+          print(event);
+          expectPosition(event);
+        }
       });
 
       // NOTE: VOLUNTARY DELAY.

@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-LIBS_VERSION=1.0.0
+LIBS_VERSION=0.6.5
 
 case $( uname -m ) in
 x86_64) LIBS_ARCH=amd64;;
@@ -11,6 +11,6 @@ esac
 
 rm -rf ./test/ci/macos/libs
 mkdir -p ./test/ci/macos/libs
-curl -s -L https://github.com/archive-user/libmpv-darwin-build/releases/download/${LIBS_VERSION}/libmpv-libs_develop_macos-${LIBS_ARCH}-video-default.tar.gz | tar xvz --strip-components 1 - -C ./test/ci/macos/libs
+curl -s -L https://github.com/Predidit/libmpv-darwin-build/releases/download/${LIBS_VERSION}/libmpv-libs_${LIBS_VERSION}_macos-${LIBS_ARCH}-video-default.tar.gz | tar xvz --strip-components 1 - -C ./test/ci/macos/libs
 
 sh ./test/ci/macos/scripts/relink_dylibs.sh @rpath $PWD/test/ci/macos/libs ./test/ci/macos/libs

@@ -12,7 +12,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0'
+        classpath 'com.android.tools.build:gradle:8.13.0'
     }
 }
 
@@ -31,7 +31,7 @@ android {
         namespace 'com.alexmercerind.media_kit_libs_android_video'
     }
 
-    compileSdkVersion 31
+    compileSdkVersion 36
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -56,22 +56,22 @@ task downloadDependencies(type: Exec) {
         }
         outputDir.mkdirs()
 
-        // Download all *.jar dependencies & verify their MD5 checksums.
+        // Download all *.jar dependencies & verify their SHA-256 checksums.
         def filesToDownload = [
-            ["url": "https://github.com/archive-user/libmpv-android-video-build/releases/download/1.0.1/default-arm64-v8a.jar", "md5": "a098f823df8031bf30a01623192d4d36", "destination": file("$buildDir/1.0.1/default-arm64-v8a.jar")],
-            ["url": "https://github.com/archive-user/libmpv-android-video-build/releases/download/1.0.1/default-armeabi-v7a.jar", "md5": "4453e8b604732ec34939e2632e7e1ae6", "destination": file("$buildDir/1.0.1/default-armeabi-v7a.jar")],
-            ["url": "https://github.com/archive-user/libmpv-android-video-build/releases/download/1.0.1/default-x86_64.jar", "md5": "efe9f22d7c2c40d9646506ffc26bc2a1", "destination": file("$buildDir/1.0.1/default-x86_64.jar")],
-            ["url": "https://github.com/archive-user/libmpv-android-video-build/releases/download/1.0.1/default-x86.jar", "md5": "59173ab9baf97c02c4ad252c044d0576", "destination": file("$buildDir/1.0.1/default-x86.jar")]
+            ["url": "https://github.com/Predidit/libmpv-android-video-build/releases/download/v1.1.5/default-arm64-v8a.jar", "sha256": "7bfb400fa1b63b68e8a7272673a993cc37b12ba90c79713c7a02a7ac7e9aa773", "destination": file("$buildDir/v1.1.5/default-arm64-v8a.jar")],
+            ["url": "https://github.com/Predidit/libmpv-android-video-build/releases/download/v1.1.5/default-armeabi-v7a.jar", "sha256": "4f2545c8678c264f10520d5581ba619278c3df04c9ef3b3316e00f85436418fc", "destination": file("$buildDir/v1.1.5/default-armeabi-v7a.jar")],
+            ["url": "https://github.com/Predidit/libmpv-android-video-build/releases/download/v1.1.5/default-x86_64.jar", "sha256": "9cbdf04951226cf18a788802d879261595e4acdc271d6fde86315623620b88ab", "destination": file("$buildDir/v1.1.5/default-x86_64.jar")],
+            ["url": "https://github.com/Predidit/libmpv-android-video-build/releases/download/v1.1.5/default-x86.jar", "sha256": "2f36dc1d12ee75a30cdfc4cf757ed34191bc80b9d323a06137197af0557e2f9c", "destination": file("$buildDir/v1.1.5/default-x86.jar")]
         ]
 
         filesToDownload.each { fileInfo ->
             def destFile = fileInfo.destination
             if (destFile.exists()) {
-                def calculatedMD5 = MessageDigest.getInstance("MD5").digest(Files.readAllBytes(destFile.toPath())).encodeHex().toString()
+                def calculatedSHA256 = MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(destFile.toPath())).encodeHex().toString()
 
-                if (calculatedMD5 != fileInfo.md5) {
+                if (calculatedSHA256 != fileInfo.sha256) {
                     destFile.delete()
-                    println "MD5 mismatch. File deleted: ${destFile}"
+                    println "SHA-256 mismatch. File deleted: ${destFile}"
                 }
 
             }
@@ -83,9 +83,9 @@ task downloadDependencies(type: Exec) {
                     os << new URL(fileInfo.url).openStream()
                 }
 
-                def calculatedMD5 = MessageDigest.getInstance("MD5").digest(Files.readAllBytes(destFile.toPath())).encodeHex().toString()
-                if (calculatedMD5 != fileInfo.md5) {
-                    throw new GradleException("MD5 verification failed for ${destFile}")
+                def calculatedSHA256 = MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(destFile.toPath())).encodeHex().toString()
+                if (calculatedSHA256 != fileInfo.sha256) {
+                    throw new GradleException("SHA-256 verification failed for ${destFile}")
                 }
             }
 

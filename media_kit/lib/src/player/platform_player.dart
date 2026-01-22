@@ -5,7 +5,9 @@
 /// Use of this source code is governed by MIT license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:typed_data';
+import 'package:media_kit/generated/libmpv/bindings.dart' as generated;
 import 'package:meta/meta.dart';
 import 'package:collection/collection.dart';
 
@@ -471,6 +473,36 @@ class PlayerConfiguration {
   /// Default: `true`.
   final bool async;
 
+  /// Whether to load mpv.conf / input.conf files.
+  ///
+  /// Default: `false`.
+  final bool config;
+
+  /// Path to the directory containing the mpv.conf / input.conf files.
+  ///
+  /// Default: ``.
+  final String configDir;
+
+  /// Whether to auto-load script files.
+  ///
+  /// Default: `true`.
+  final bool autoLoadScripts;
+
+  /// Options to be set before player initialization.
+  ///
+  /// Default: `null`.
+  final Map<String, String>? options;
+
+  /// Properties to observe and update the state & feed event stream.
+  ///
+  /// Default: `null`.
+  final Map<String, int>? observeProperties;
+
+  /// Optional callback for event handler.
+  ///
+  /// Default: `null`.
+  final Future<void> Function(Pointer<generated.mpv_event>)? eventHandler;
+
   /// Whether to use [libass](https://github.com/libass/libass) based subtitle rendering for native backend.
   ///
   /// By default, subtitles rendering is Flutter `Widget` based.
@@ -506,6 +538,12 @@ class PlayerConfiguration {
   /// Learn more: https://ffmpeg.org/ffmpeg-protocols.html#Protocol-Options
   final List<String> protocolWhitelist;
 
+  /// Enables HLS ad filtering via `hls_ad_filter`.
+  ///
+  /// Default: `false` (pass `hls_ad_filter=0`).
+  /// When set to `true`, `hls_ad_filter=1` is passed to disable ads.
+  final bool adBlocker;
+
   /// {@macro player_configuration}
   const PlayerConfiguration({
     this.vo = 'null',
@@ -515,6 +553,12 @@ class PlayerConfiguration {
     this.ready,
     this.muted = false,
     this.async = true,
+    this.config = false,
+    this.configDir = '',
+    this.autoLoadScripts = true,
+    this.options,
+    this.observeProperties,
+    this.eventHandler,
     this.libass = false,
     this.libassAndroidFont,
     this.libassAndroidFontName,
@@ -528,9 +572,11 @@ class PlayerConfiguration {
       'data',
       'file',
       'http',
+      'httpproxy',
       'https',
       'crypto',
     ],
+    this.adBlocker = false,
   });
 }
 

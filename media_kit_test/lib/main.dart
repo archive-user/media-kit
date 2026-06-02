@@ -27,8 +27,8 @@ Future<void> main() async {
       DeviceOrientation.portraitDown,
     ],
   );
-  runApp(const MyApp(DownloadingScreen()));
-  await prepareSources();
+  // runApp(const MyApp(DownloadingScreen()));
+  // await prepareSources();
   runApp(const MyApp(PrimaryScreen()));
 }
 

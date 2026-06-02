@@ -15,7 +15,6 @@ migrate_working_dir/
 *.ipr
 *.iws
 .idea/
-.cxx
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
@@ -32,3 +31,6 @@ build/
 
 # Libraries should not include pubspec.lock, per https://dart.dev/guides/libraries/private-files#pubspeclock.
 /pubspec.lock
+
+# FVM Version Cache
+.fvm/

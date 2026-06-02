@@ -15,34 +15,15 @@ set(CMAKE_CXX_STANDARD 17)
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 set(PLUGIN_NAME "media_kit_video_plugin")
+set(CMAKE_INSTALL_RPATH "$ORIGIN/lib")
 
-set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-set(CMAKE_INSTALL_RPATH "$ORIGIN")
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+# add runpath, shared libs of a release bundle is in lib dir, plugin must add $ORIGIN to runpath to find libmpv
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--enable-new-dtags -Wl,-z,origin -Wl,-rpath,\\$ORIGIN")
+set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--enable-new-dtags -Wl,-z,origin -Wl,-rpath,\\$ORIGIN")
 
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
-  set(ARCH_NAME "x86_64")
-elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
-  set(ARCH_NAME "aarch64")
-else()
-  message(FATAL_ERROR "Unsupported architecture: ${CMAKE_SYSTEM_PROCESSOR}")
-endif()
-
-message(STATUS "Detected architecture: ${ARCH_NAME}")
-
-if(ARCH_NAME STREQUAL "x86_64")
-  set(LIBMPV_ZIP_URL "https://github.com/Predidit/libmpv-linux-build/releases/download/2024120614/libmpv_x86_64.zip")
-  set(LIBMPV_ZIP_SHA256 "f1da71e4a8c01b2eb1ae3e7c1e6de619b2a391001c982bc197766e4dad1ae722")
-  set(LIBMPV_HEADER_ZIP_URL "https://github.com/Predidit/libmpv-linux-build/releases/download/2024120614/libmpv_x86_64_header.zip")
-  set(LIBMPV_HEADER_ZIP_SHA256 "d7dc73eb01ab19e0c198973cd36bf04936848008bebbacfdb29f082a23865e3a")
-elseif(ARCH_NAME STREQUAL "aarch64")
-  set(LIBMPV_ZIP_URL "https://github.com/Predidit/libmpv-linux-build/releases/download/20260124/libmpv_aarch64.zip")
-  set(LIBMPV_ZIP_SHA256 "ca6429cbc5228d40c6a48c09c5f1e708cc3b5bf1d5058551d1d86e4bcb0aac5a")
-  set(LIBMPV_HEADER_ZIP_URL "https://github.com/Predidit/libmpv-linux-build/releases/download/20260124/libmpv_aarch64_header.zip")
-  set(LIBMPV_HEADER_ZIP_SHA256 "497628e4bb647096807ec6be11e5fe26e44eaa48908f6fc1e7d6f1fe728182be")
-endif()
-
-set(LIBMPV_ZIP_PATH "${CMAKE_BINARY_DIR}/libmpv_${ARCH_NAME}.zip")
+set(LIBMPV_ZIP_URL "https://github.com/archive-user/libmpv-linux-build/releases/download/1.0.0/libmpv_x86_64.zip")
+set(LIBMPV_ZIP_PATH "${CMAKE_BINARY_DIR}/libmpv_x86_64.zip")
+set(LIBMPV_ZIP_MD5 "9272d8388dde123348a1565ddcac5130")
 set(LIBMPV_UNZIP_DIR "${CMAKE_BINARY_DIR}/mpv")
 
 make_directory("${LIBMPV_UNZIP_DIR}") 
@@ -58,12 +39,12 @@ else()
   message(STATUS "libmpv download completed.")
 endif()
 
-message(STATUS "Verifying SHA256 checksum for ${LIBMPV_ZIP_PATH}")
-file(SHA256 ${LIBMPV_ZIP_PATH} computed_sha256)
-if(NOT computed_sha256 STREQUAL "${LIBMPV_ZIP_SHA256}")
-  message(FATAL_ERROR "SHA256 checksum mismatch! Expected: ${LIBMPV_ZIP_SHA256}, Got: ${computed_sha256}")
+message(STATUS "Verifying MD5 checksum for ${LIBMPV_ZIP_PATH}")
+file(MD5 ${LIBMPV_ZIP_PATH} computed_md5)
+if(NOT computed_md5 STREQUAL "${LIBMPV_ZIP_MD5}")
+  message(FATAL_ERROR "MD5 checksum mismatch! Expected: ${LIBMPV_ZIP_MD5}, Got: ${computed_md5}")
 else()
-  message(STATUS "SHA256 checksum verification passed.")
+  message(STATUS "MD5 checksum verification passed.")
 endif()
 
 message(STATUS "unzip libmpv to ${LIBMPV_UNZIP_DIR}")
@@ -87,7 +68,8 @@ else()
   message(FATAL_ERROR "libmpv.so.2 not founded ${LIBMPV_PATH}")
 endif()
 
-set(LIBMPV_HEADER_ZIP_PATH "${CMAKE_BINARY_DIR}/libmpv_${ARCH_NAME}_header.zip")
+set(LIBMPV_HEADER_ZIP_URL "https://github.com/archive-user/libmpv-linux-build/releases/download/1.0.0/libmpv_x86_64_header.zip")
+set(LIBMPV_HEADER_ZIP_PATH "${CMAKE_BINARY_DIR}/libmpv_x86_64_header.zip")
 set(LIBMPV_HEADER_UNZIP_DIR "${CMAKE_BINARY_DIR}/mpv/include")
 
 message(STATUS "downloading libmpv header from ${LIBMPV_HEADER_ZIP_URL} to ${LIBMPV_HEADER_ZIP_PATH}")
@@ -98,14 +80,6 @@ if(NOT download_status_code EQUAL 0)
   message(FATAL_ERROR "libmpv header download failed. err: ${download_status_code}")
 else()
   message(STATUS "libmpv header download completed.")
-endif()
-
-message(STATUS "Verifying SHA256 checksum for ${LIBMPV_HEADER_ZIP_PATH}")
-file(SHA256 ${LIBMPV_HEADER_ZIP_PATH} computed_header_sha256)
-if(NOT computed_header_sha256 STREQUAL "${LIBMPV_HEADER_ZIP_SHA256}")
-  message(FATAL_ERROR "SHA256 checksum mismatch! Expected: ${LIBMPV_HEADER_ZIP_SHA256}, Got: ${computed_header_sha256}")
-else()
-  message(STATUS "SHA256 checksum verification passed.")
 endif()
 
 message(STATUS "unzip libmpv header to ${LIBMPV_HEADER_UNZIP_DIR}")
@@ -128,16 +102,8 @@ if(MEDIA_KIT_LIBS_AVAILABLE)
     "texture_sw.cc"
     "video_output_manager.cc"
     "video_output.cc"
-    "gl_render_thread.cc"
     "utils.cc"
   )
-
-  # add runpath, shared libs of a release bundle is in lib dir, plugin must add $ORIGIN to runpath to find libmpv
-  target_link_options(${PLUGIN_NAME} PRIVATE -Wl,--enable-new-dtags -Wl,-z,origin)
-  set_target_properties(${PLUGIN_NAME} PROPERTIES 
-  BUILD_WITH_INSTALL_RPATH TRUE
-  INSTALL_RPATH "$ORIGIN:$ORIGIN/lib"
-  INSTALL_RPATH_USE_LINK_PATH TRUE)
 
   add_library(
      libmpv SHARED IMPORTED
@@ -191,13 +157,6 @@ else()
     ${PLUGIN_NAME} SHARED
     "media_kit_video_plugin.cc"
   )
-
-  # add runpath, shared libs of a release bundle is in lib dir, plugin must add $ORIGIN to runpath to find libmpv
-  target_link_options(${PLUGIN_NAME} PRIVATE -Wl,--enable-new-dtags -Wl,-z,origin)
-  set_target_properties(${PLUGIN_NAME} PROPERTIES 
-  BUILD_WITH_INSTALL_RPATH TRUE
-  INSTALL_RPATH "$ORIGIN:$ORIGIN/lib"
-  INSTALL_RPATH_USE_LINK_PATH TRUE)
 
   apply_standard_settings(${PLUGIN_NAME})
 

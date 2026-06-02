@@ -35,7 +35,6 @@ dependencies:
   collection: ^1.17.0
   http: ">=0.13.0 <2.0.0"
   image: ^4.0.17
-  js: ^0.7.1
   meta: ^1.8.0
   path: ^1.8.0
   safe_local_storage: ^2.0.1
@@ -46,7 +45,7 @@ dependencies:
 
 dev_dependencies:
   test: ^1.24.1
-  lints: ^5.0.0
+  lints: ^3.0.0
 
 ffigen:
   name: MPV
@@ -55,3 +54,7 @@ ffigen:
     entry-points:
       - headers/client.h
   dart-bool: true
+
+# flutter:
+#   assets:
+#     - assets/web/

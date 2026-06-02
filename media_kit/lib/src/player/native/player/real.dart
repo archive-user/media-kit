@@ -751,6 +751,8 @@ class NativePlayer extends PlatformPlayer {
             await _setPropertyString('loop-playlist', 'yes');
             break;
           }
+        default:
+          break;
       }
 
       state = state.copyWith(playlistMode: playlistMode);
@@ -1926,7 +1928,7 @@ class NativePlayer extends PlatformPlayer {
           }
         }
       }
-      if (prop.ref.name.cast<Utf8>().toDartString() == 'video-params' &&
+      if (prop.ref.name.cast<Utf8>().toDartString() == 'video-out-params' &&
           prop.ref.format == generated.mpv_format.MPV_FORMAT_NODE) {
         final node = prop.ref.data.cast<generated.mpv_node>().ref;
         final data = <String, dynamic>{};
@@ -2267,9 +2269,6 @@ class NativePlayer extends PlatformPlayer {
         );
       }
     }
-    if (configuration.eventHandler != null) {
-      await configuration.eventHandler!(event);
-    }
   }
 
   Future<void> _create() {
@@ -2279,15 +2278,7 @@ class NativePlayer extends PlatformPlayer {
         // Set --vid=no by default to prevent redundant video decoding.
         // [VideoController] internally sets --vid=auto upon attachment to enable video rendering & decoding.
         if (!test) 'vid': 'no',
-        if (configuration.config) 'config': 'yes',
-        if (configuration.configDir.isNotEmpty)
-          'config-dir': configuration.configDir,
-        'load-scripts': configuration.autoLoadScripts ? "yes" : "no",
       };
-
-      if (configuration.options != null) {
-        options.addAll(configuration.options!);
-      }
 
       if (Platform.isAndroid &&
           configuration.libass &&
@@ -2308,7 +2299,7 @@ class NativePlayer extends PlatformPlayer {
             // Use it if located inside the application bundle, otherwise no worries.
             options.addAll(
               {
-                if (!configuration.config) 'config': 'yes',
+                'config': 'yes',
                 'sub-fonts-dir': directory,
                 'sub-font': configuration.libassAndroidFontName ?? '',
               },
@@ -2393,7 +2384,6 @@ class NativePlayer extends PlatformPlayer {
             'seg_max_retry=5',
             'strict=experimental',
             'allowed_extensions=ALL',
-            'hls_ad_filter=${configuration.adBlocker ? 1 : 0}',
             'protocol_whitelist=[${configuration.protocolWhitelist.join(',')}]'
           ].join(','),
           'sub-ass': configuration.libass ? 'yes' : 'no',
@@ -2420,7 +2410,7 @@ class NativePlayer extends PlatformPlayer {
       }
 
       // Observe the properties to update the state & feed event stream.
-      final observeProperties = <String, int>{
+      <String, int>{
         'pause': generated.mpv_format.MPV_FORMAT_FLAG,
         'time-pos': generated.mpv_format.MPV_FORMAT_DOUBLE,
         'duration': generated.mpv_format.MPV_FORMAT_DOUBLE,
@@ -2435,23 +2425,18 @@ class NativePlayer extends PlatformPlayer {
         'audio-bitrate': generated.mpv_format.MPV_FORMAT_DOUBLE,
         'audio-device': generated.mpv_format.MPV_FORMAT_NODE,
         'audio-device-list': generated.mpv_format.MPV_FORMAT_NODE,
-        'video-params': generated.mpv_format.MPV_FORMAT_NODE,
+        'video-out-params': generated.mpv_format.MPV_FORMAT_NODE,
         'track-list': generated.mpv_format.MPV_FORMAT_NODE,
         'eof-reached': generated.mpv_format.MPV_FORMAT_FLAG,
         'idle-active': generated.mpv_format.MPV_FORMAT_FLAG,
         'sub-text': generated.mpv_format.MPV_FORMAT_NODE,
         'secondary-sub-text': generated.mpv_format.MPV_FORMAT_NODE,
-      };
-      if (configuration.observeProperties != null) {
-        observeProperties.addAll(configuration.observeProperties!);
-      }
-      observeProperties.forEach(
+      }.forEach(
         (property, format) {
-          final reply = property.hashCode;
           final name = property.toNativeUtf8();
           mpv.mpv_observe_property(
             ctx,
-            reply,
+            0,
             name.cast(),
             format,
           );

@@ -6,12 +6,12 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/src/video_controller/ohos_video_controller/ohos_video_controller.dart';
 
 import 'package:media_kit_video/src/video_controller/platform_video_controller.dart';
 
 import 'package:media_kit_video/src/video_controller/native_video_controller/native_video_controller.dart';
 import 'package:media_kit_video/src/video_controller/android_video_controller/android_video_controller.dart';
-import 'package:media_kit_video/src/video_controller/web_video_controller/web_video_controller.dart';
 
 /// {@template video_controller}
 ///
@@ -96,8 +96,8 @@ class VideoController {
           );
           platform.complete(result);
           notifier.value = result;
-        } else if (WebVideoController.supported) {
-          final result = await WebVideoController.create(
+        } else if (OhosVideoController.supported) {
+          final result = await OhosVideoController.create(
             player,
             configuration,
           );

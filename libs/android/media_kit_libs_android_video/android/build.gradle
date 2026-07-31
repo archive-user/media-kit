@@ -57,7 +57,7 @@ task downloadDependencies(type: Exec) {
         outputDir.mkdirs()
 
         // Download all *.jar dependencies & verify their SHA-256 checksums.
-        [
+        def filesToDownload = [
             ["url": "https://github.com/archive-user/libmpv-android-video-build/releases/download/1.0.8/default-arm64-v8a.jar", "sha256": "75e60018cb37f9d1b5dd0ca24e117ff0ecd14c70eb9bd0570574c042cf6344a6", "destination": file("$buildDir/1.0.8/default-arm64-v8a.jar")],
             ["url": "https://github.com/archive-user/libmpv-android-video-build/releases/download/1.0.8/default-armeabi-v7a.jar", "sha256": "c304bdc202033660d006658788272c23fb66201443eae1c996a2f587c8298ddb", "destination": file("$buildDir/1.0.8/default-armeabi-v7a.jar")],
             ["url": "https://github.com/archive-user/libmpv-android-video-build/releases/download/1.0.8/default-x86_64.jar", "sha256": "110f1d09976e52dd1ec78381f7525a474ac7458683df32bffb462dee66a88c5b", "destination": file("$buildDir/1.0.8/default-x86_64.jar")],

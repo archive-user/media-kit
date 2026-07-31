@@ -483,10 +483,7 @@ Future<void> defaultEnterNativeFullscreen() async {
           ),
         ],
       );
-    } else if (Platform.isMacOS ||
-        Platform.isWindows ||
-        Platform.isLinux ||
-        Platform.operatingSystem == 'ohos') {
+    } else if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
       await const MethodChannel('com.alexmercerind/media_kit_video')
           .invokeMethod(
         'Utils.EnterNativeFullscreen',
@@ -513,10 +510,7 @@ Future<void> defaultExitNativeFullscreen() async {
           ),
         ],
       );
-    } else if (Platform.isMacOS ||
-        Platform.isWindows ||
-        Platform.isLinux ||
-        Platform.operatingSystem == 'ohos') {
+    } else if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
       await const MethodChannel('com.alexmercerind/media_kit_video')
           .invokeMethod(
         'Utils.ExitNativeFullscreen',

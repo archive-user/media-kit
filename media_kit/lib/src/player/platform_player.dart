@@ -506,6 +506,18 @@ class PlayerConfiguration {
   /// Learn more: https://ffmpeg.org/ffmpeg-protocols.html#Protocol-Options
   final List<String> protocolWhitelist;
 
+  /// Sets whether to use high resolution seeking for native backend.
+  ///
+  /// When enabled, the player will decode frames precisely to the target position,
+  /// which is ideal for video content. For image-sequence based HLS streams (e.g.
+  /// PNG slideshows), disabling this option can resolve issues like:
+  /// - Inability to seek to 0:00
+  /// - Green/garbled display at start
+  /// - Unexpected position jumps
+  ///
+  /// Default: `true`.
+  final bool hrSeek;
+
   /// {@macro player_configuration}
   const PlayerConfiguration({
     this.vo = 'null',
@@ -531,6 +543,7 @@ class PlayerConfiguration {
       'https',
       'crypto',
     ],
+    this.hrSeek = true,
   });
 }
 

@@ -79,13 +79,12 @@ class VideoControllerConfiguration {
   /// Default: Platform specific.
   /// * Windows, GNU/Linux, macOS & iOS: `libmpv`
   /// * Android: `gpu`
-  /// * Ohos: `gpu-next`
   final String? vo;
 
   /// Sets the [`--hwdec`](https://mpv.io/manual/stable/#options-hwdec) property on native backend.
   ///
   /// Default: Platform specific.
-  /// * Windows, GNU/Linux, macOS & iOS, Ohos : `auto`
+  /// * Windows, GNU/Linux, macOS & iOS : `auto`
   /// * Android: `auto-safe`
   final String? hwdec;
 

@@ -6,7 +6,6 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/src/video_controller/ohos_video_controller/ohos_video_controller.dart';
 
 import 'package:media_kit_video/src/video_controller/platform_video_controller.dart';
 
@@ -91,13 +90,6 @@ class VideoController {
           notifier.value = result;
         } else if (AndroidVideoController.supported) {
           final result = await AndroidVideoController.create(
-            player,
-            configuration,
-          );
-          platform.complete(result);
-          notifier.value = result;
-        } else if (OhosVideoController.supported) {
-          final result = await OhosVideoController.create(
             player,
             configuration,
           );

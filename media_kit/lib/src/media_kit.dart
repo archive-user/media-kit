@@ -33,8 +33,6 @@ abstract class MediaKit {
         nativeEnsureInitialized(libmpv: libmpv);
       } else if (UniversalPlatform.isAndroid) {
         nativeEnsureInitialized(libmpv: libmpv);
-      } else if (UniversalPlatform.operatingSystem == 'ohos') {
-        nativeEnsureInitialized(libmpv: libmpv);
       }
       _initialized = true;
     } catch (_) {

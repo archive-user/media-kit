@@ -64,9 +64,6 @@ abstract class NativeLibrary {
       'android': [
         'libmpv.so',
       ],
-      'ohos': [
-        'libmpv.so.2',
-      ],
     }[Platform.operatingSystem];
     if (names != null) {
       // Try to load the dynamic library from the system using [DynamicLibrary.open].
@@ -91,8 +88,6 @@ abstract class NativeLibrary {
                 'Cannot find Mpv.framework/Mpv. Please ensure it\'s presence in the Frameworks folder of the application.',
             'android':
                 'Cannot find libmpv.so. Please ensure it\'s presence in the APK.',
-            'ohos':
-                'Cannot find libmpv.so.2. Please ensure it\'s presence in the HAP.',
           }[Platform.operatingSystem]!,
         );
       }

@@ -112,8 +112,6 @@ class Player {
       platform = NativePlayer(configuration: configuration);
     } else if (UniversalPlatform.isAndroid) {
       platform = NativePlayer(configuration: configuration);
-    } else if (UniversalPlatform.operatingSystem == 'ohos') {
-      platform = NativePlayer(configuration: configuration);
     }
   }
 

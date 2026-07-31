@@ -2354,7 +2354,7 @@ class NativePlayer extends PlatformPlayer {
         'dither': 'no',
         'cache': 'yes',
         'cache-on-disk': 'yes',
-        'hr-seek': 'yes',
+        'hr-seek': configuration.hrSeek ? 'yes' : 'no',
         'hr-seek-framedrop': 'no',
         'correct-downscaling': 'no',
         'linear-downscaling': 'no',
